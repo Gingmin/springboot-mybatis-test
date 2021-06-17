@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<h1 align="center">TEST</h1>
+	<form th:action="@{select}" method="get">
+		<input type="submit" value="조회 테스트">
+	</form>
+	<form>
+		<input type="text" th:value="${result}" value="기본값"/>
+	</form>
+</body>
+</html>
