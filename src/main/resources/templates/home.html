@@ -3,9 +3,21 @@
       xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>메인</title>
 </head>
 <body>
+	<!-- sec:authorize를 사용하여 사용자의 role에 따라 보이는 메뉴 다르게 구성
+	isAnonymous() 익명의 사용자일 경우, 로그인, 회원가입 버튼
+	isAuthenticated() 인증된 사용자의 경우, 로그아웃 버튼 노출
+	hasRole() 특정 롤을 가진 사용자에 대해 메뉴 노출 -->
+	<h1>메인</h1>
+	<a sec:authorize="isAnonymous()" th:href="@{/user/login">로그인</a>
+	<a sec:authorize="isAuthenticated()" th:href="@{/user/logout">로그아웃</a>
+	<a sec:authorize="isAnonymous()" th:href="@{/user/signup">회원가입</a>
+	<a sec:authorize="hasRole('ROLE_MEMBER')" th:href="@{/user/info">내정보</a>
+	<a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{/admin">어드민</a>
+	
+	
 	<h1 align="center">TEST</h1>
 	<form th:action="@{select}" method="get">
 		<input type="submit" value="조회 테스트">
@@ -13,5 +25,7 @@
 	<form>
 		<input type="text" th:value="${result}" value="기본값"/>
 	</form>
+	
+	
 </body>
 </html>
