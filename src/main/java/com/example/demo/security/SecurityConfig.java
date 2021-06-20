@@ -64,21 +64,31 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			 * 이때 커스텀 로그인 form의 action경로와 loginPage()의 파라미터 경로가 일치해야
 			 * 인증을 처리할 수 있다. */
 			.loginPage("/user/login")
-			/* 로그인이 성공했을 때 이동되는 페이지이며, */
+			/* 로그인이 성공했을 때 이동되는 페이지이며, 컨트롤러에서 URL 매핑이 되어있어야 한다.*/
 			.defaultSuccessUrl("/user/login/result")
 			.permitAll()
 		.and()
+			/* WebSecurityConfigurerAdapter를 사용할 때 자동으로 적용, 기본적으로 /logout에 접근하면
+			 * HTTP 세션을 제거 */
 			.logout()
+			/* 로그아웃의 기본 URL이 아닌 다른 URL로 재정의 */
 			.logoutRequestMatcher(new AntPathRequestMatcher("/user/logout"))
 			.logoutSuccessUrl("/user/logout/result")
+			/* HTTP 세션을 초기화하는 작업 */
 			.invalidateHttpSession(true)
+			/* deleteCokkies("KEY명") 로그아웃이 특정 쿠키를 제거할 때 사용 */
 		.and()
+			/* 예외가 발생했을 때 사용 - 여기서는 접근권한이 없을 때 로그인 페이지로 이동 */
 			.exceptionHandling().accessDeniedPage("/user/denied");
 	}
 	
 	@Override
 	public void configure(AuthenticationManagerBuilder auth) throws Exception {
-		
+		/* Spring Security에서 모든 인증은 AuthenticationManager를 통해 이루어지며 AuthenticationManager
+		 * 를 생성하기 위해서는 AuthenticationManagerBuilder를 사용
+		 * 로그인 처리, 인증을 위해서는 UserDetailService를 통해서 필요한 정보들을 가져오는데 - 여기서는 memberService
+		 * service 클래스에서는 UserDetailsService인터페이스를 implements하여, loadUserByUsername()메서드 구현하면 된다.
+		 * 비밀번호 암호화에는 passwordEncoder를 사용 */
 		auth.userDetailsService(memberService).passwordEncoder(passwordEncoder());
 	}
 	
