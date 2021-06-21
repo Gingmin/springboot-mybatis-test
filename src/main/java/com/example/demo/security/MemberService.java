@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -11,18 +12,24 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.demo.model.dao.MemberMapper;
 import com.example.demo.model.dto.MemberDTO;
 
-import lombok.AllArgsConstructor;
-
-@Service
-@AllArgsConstructor
+@Service("memberService")
 public class MemberService implements UserDetailsService {
 	
-	private MemberRepository memberRepository;
+	private PasswordEncoder passwordEncoder;
+	private MemberMapper memberMapper;
+	
+	@Autowired
+	public MemberService(PasswordEncoder passwordEncoder, MemberMapper memberMapper) {
+		this.passwordEncoder = passwordEncoder;
+		this.memberMapper = memberMapper;
+	}
 	
 	@Override
 	/* 상세정보를 조회, 사용자의 계정정보와 권한을 갖는 UserDetails 인터페이스를 반환해아 한다.
@@ -35,29 +42,28 @@ public class MemberService implements UserDetailsService {
 	 * return은 spring security에서 제공하는 UserDetails를 구현한 User를 반환(org.springframework.security
 	 * .core.user.details.User 
 	 * 생성자의 매개변수는 순서대로 아이디, 비밀번호, 권한리스트 */
-	public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
-		Optional<MemberEntity> userEntityWrapper = memberRepository.findByEmail(id);
-		
-		MemberEntity userEntity = userEntityWrapper.get();
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		MemberDTO memberDTO = memberMapper.findByEmail(username);
 		
 		List<GrantedAuthority> authorities = new ArrayList<>();
+		authorities.add((GrantedAuthority) memberMapper.readAuthority(username));
+		memberDTO.setAuthorities(authorities);
+//		authorities.add(new SimpleGrantedAuthority(memberDTO.getAuthorities());
 		
-		if(("admin@example.com").equals(id)) {
-			authorities.add(new SimpleGrantedAuthority(Role.ADMIN.getValue()));
-		} else {
-			authorities.add(new SimpleGrantedAuthority(Role.MEMBER.getValue()));
-		}
-		
-		return new User(userEntity.getId(), userEntity.getPwd(), authorities);
+		return new User(memberDTO.getId(), memberDTO.getPwd(), memberDTO.getAuthorities());
 	}
 	
+	
+	
+	
 	/* JPA 회원가입을 처리하는 메서드 비밀번호를 암호화하여 저장 */
-	@Transactional
-	public Long joinUser(MemberDTO memberDTO) {
-		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-		memberDTO.setPwd(passwordEncoder.encode(memberDTO.getPwd()));
-		
-		return memberRepository.save(memberDTO.toEntity()).getNo();
-	}
+//	@Transactional
+//	public Long joinUser(MemberDTO memberDTO) {
+//		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+//		memberDTO.setPwd(passwordEncoder.encode(memberDTO.getPwd()));
+//		
+//		return memberRepository.save(memberDTO.toEntity()).getNo();
+//	}
 
+	
 }

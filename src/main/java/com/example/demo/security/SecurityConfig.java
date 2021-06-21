@@ -3,20 +3,18 @@ package com.example.demo.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import lombok.AllArgsConstructor;
-
 @Configuration
 @EnableWebSecurity //Spring Security 설정 클래스 정의
-@AllArgsConstructor
 /* WebSecurityConfigurerAdapter 클래스를 상속받아 메서드를 구현하는 것인 일반적인 방법 
  * 이 클래스는 WebSecurityConfigurer 인스턴스를 편리하게 생성하기 위한 클래스
  * */
@@ -24,11 +22,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private MemberService memberService;
 	
+	@Autowired
+	public SecurityConfig(MemberService memberService) {
+		this.memberService = memberService;
+	}
+	
 	@Bean
 	public PasswordEncoder passwordEncoder() {
-		/* BCryptPasswordEncoder는 service에서 비밀번호를 암호화할 수 있도록 bean으로 등록 */
-		return new BCryptPasswordEncoder();
+		/* BCryptPasswordEncoder는 service에서 비밀번호를 암호화할 수 있도록 bean으로 등록 
+		 * new BCryptPasswordEncoder();*/
+		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
 	}
+
+// 실제 인증을 한 이후에 인증이 완료되면 Authentication객체를 반환을 위한 bean등록 - 필요한게 맞는지?
+//	@Bean
+//	public DaoAuthenticationProvider authenticationProvider(MemberService memberService) {
+//		DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+//		authenticationProvider.setUserDetailsService(memberService);
+//		authenticationProvider.setPasswordEncoder(passwordEncoder());
+//		return authenticationProvider;
+//	}
 	
 	/* configure 메소드 오버라이딩 */
 	
@@ -90,6 +103,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 * service 클래스에서는 UserDetailsService인터페이스를 implements하여, loadUserByUsername()메서드 구현하면 된다.
 		 * 비밀번호 암호화에는 passwordEncoder를 사용 */
 		auth.userDetailsService(memberService).passwordEncoder(passwordEncoder());
+		//auth.authenticationProvider(authenticationProvider(memberService));
 	}
 	
 }

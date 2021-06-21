@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.demo.model.dao.MemberMapper">
+
+	<select id="findByEmail" parameterType="String" resultType="com.example.demo.model.dto.MemberDTO">
+		SELECT 
+		       NO
+		     , ID
+		     , PWD
+		     , ENROLLDATE
+		  FROM MEMBER
+		 WHERE ID = #{username}
+	</select>
+
+	<select id="readAuthority" parameterType="String" resultType="String">
+		SELECT ROLE
+		  FROM AUTHORITY
+		 WHERE ID = #{username}
+	</select>
+	
+	<insert id="" parameterType="com.example.demo.model.dto.MemberDTO">
+		INSERT INTO MEMBER
+		( ID, PWD)
+		VALUES
+		( #{username}, #{password} )
+	</insert>
+
+
+</mapper>
