@@ -1,9 +1,20 @@
 package com.example.demo.security;
 
-import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.example.demo.model.dao.MemberMapper;
+import com.example.demo.model.dto.MemberDTO;
 
-public interface MemberRepository extends JpaRepository<MemberEntity, Long>{
-	Optional<MemberEntity> findByEmail(String userEmail);
+public class MemberRepository {
+
+//	private MemberMapper memberMapper;
+//	
+//	@Autowired
+//	public MemberRepository(MemberMapper memberMapper) {
+//		this.memberMapper = memberMapper;
+//	}
+//	
+//	public MemberDTO findByEmail(String username) {
+//		return memberMapper.readMember(username);
+//	}
 }

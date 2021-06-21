@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,12 +11,16 @@ import com.example.demo.security.MemberService;
 import lombok.AllArgsConstructor;
 
 @Controller
-@AllArgsConstructor
 public class MemberController {
 	
 	/* 로그인 로그아웃에 대한 로직은 x */
 	
 	private MemberService memberService;
+	
+	@Autowired
+	public MemberController(MemberService memberService) {
+		this.memberService = memberService;
+	}
 	
 	@GetMapping("/user/signup")
 	public String dispSignup() {
@@ -24,7 +29,6 @@ public class MemberController {
 	
 	@PostMapping("/user/signup")
 	public String execSignup(MemberDTO memberDTO) {
-		memberService.joinUser(memberDTO);
 		return "redirect:/user/login";
 	}
 	
