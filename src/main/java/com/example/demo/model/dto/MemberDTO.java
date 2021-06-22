@@ -17,7 +17,7 @@ public class MemberDTO implements UserDetails{
 	private String role;
 	private java.util.Date enrollDate;
 	private Collection<? extends GrantedAuthority> authorities;
-	
+	 
 	//유저가 갖고 있는 권한 목록
 	@Override
 	public Collection <? extends GrantedAuthority> getAuthorities() {
